@@ -22,7 +22,7 @@ describe("ThreadRepositoryPostgres", () => {
 
       await expect(
         threadRepositoryPostgres.verifyAvailableThread("thread-123")
-      ).rejects.toThrowError(new NotFoundError('thread not found'));
+      ).rejects.toThrowError(new NotFoundError("thread not found"));
     });
 
     it("should not throw NotFoundError when thread available", async () => {
@@ -91,38 +91,39 @@ describe("ThreadRepositoryPostgres", () => {
     });
   });
 
-  describe('getThreadById function', () => {
-    it('should throw NotFoundError when thread not available', async () => {
-        const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
-    
-        await expect(threadRepositoryPostgres.getThreadById('thread-123')).rejects.toThrowError(NotFoundError);
-    })
+  describe("getThreadById function", () => {
+    it("should throw NotFoundError when thread not available", async () => {
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
-    it('should return thread correctly', async () => {
-        const userId = 'user-123'
-        const threadId = 'thread-123'
-        const date = new Date().toISOString()
+      await expect(
+        threadRepositoryPostgres.getThreadById("thread-123")
+      ).rejects.toThrowError(NotFoundError);
+    });
 
-        await UsersTableTestHelper.addUser({ id: userId, username: 'johndoe' })
-        await ThreadsTableTestHelper.addThread({
-            id: threadId,
-            title: 'A thread title',
-            body: 'A thread body',
-            date,
-            owner: userId
-        })
+    it("should return thread correctly", async () => {
+      const userId = "user-123";
+      const threadId = "thread-123";
+      const date = "2024-12-29T10:33:43.885Z";
+      await UsersTableTestHelper.addUser({ id: userId, username: "johndoe" });
+      await ThreadsTableTestHelper.addThread({
+        id: threadId,
+        date,
+        owner: userId,
+      });
 
-        const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {})
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
-        const thread = await threadRepositoryPostgres.getThreadById(threadId)
-        
-        expect(thread).toStrictEqual({
-          id: threadId,
-          title: 'A thread title',
-          body: 'A thread body',
-          date,
-          username: 'johndoe',
-        });
-    })
-  })
+      const thread = await threadRepositoryPostgres.getThreadById(threadId);
+
+      const formattedDate = thread.date.replace("T", " ").replace("Z", "");
+
+      expect(thread).toStrictEqual({
+        id: threadId,
+        title: "A thread title",
+        body: "A thread body",
+        date: formattedDate,
+        username: "johndoe",
+      });
+    });
+  });
 });
