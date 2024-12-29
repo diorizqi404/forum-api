@@ -136,7 +136,9 @@ describe("threads comment endpoint", () => {
         content: "A comment",
       };
 
-      await ThreadsTableTestHelper.addThread(dummyThread);
+      const { userId } = await serverTestHelper.getAccessTokenAndUserId();
+
+      await ThreadsTableTestHelper.addThread({ ...dummyThread, owner: userId });
 
       const response = await server.inject({
         method: "POST",
